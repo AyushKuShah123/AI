@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGRIQUAPONICS</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            position: relative;
+        }
+        h1 {
+            font-size: 2.5em;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        #graph {
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        #image-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            max-width: 100px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>FARMER RELIEF SYSTEM REALTIME DATA</h1>
+    <div id="image-container">
+        <img src="{{ url_for('static', filename='Agriquaponics.jpeg') }}" alt="Description of Image">
+    </div>
+    <div id="graph"></div> <!-- Graph displayed here -->
+    <table id="data-table"> <!-- Table below the graph -->
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Temperature</th>
+                <th>Humidity</th>
+                <th>Soil Moisture</th>
+                <th>Water Flow Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be populated here -->
+        </tbody>
+    </table>
+
+    <script>
+        setInterval(function() {
+            $.ajax({
+                url: '/graph',
+                type: 'GET',
+                success: function(data) {
+                    $('#graph').html('<img src="data:image/png;base64,' + data.graph + '" />');
+                    
+                    // Update the table with last 6 readings
+                    var tableBody = $('#data-table tbody');
+                    tableBody.empty(); // Clear the current table data
+                    data.data.forEach(function(entry) {
+                        var rowHtml = '<tr>';
+                        rowHtml += '<td>' + new Date(entry[0]).toLocaleString() + '</td>'; // Timestamp
+                        rowHtml += '<td>' + entry[1] + '</td>'; // Temperature
+                        rowHtml += '<td>' + entry[2] + '</td>'; // Humidity
+                        rowHtml += '<td>' + entry[3] + '</td>'; // Soil Moisture
+                        rowHtml += '<td>' + entry[4] + '</td>'; // Water Flow Status
+                        rowHtml += '</tr>';
+                        tableBody.append(rowHtml);
+                    });
+                }
+            });
+        }, 5000); // Adjust the interval if needed
+    </script>
+</body>
+</html>
